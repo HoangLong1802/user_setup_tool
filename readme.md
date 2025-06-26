@@ -10,15 +10,6 @@ A pure shell and batch solution for IT Helpdesk to onboard new users without Pyt
 - Google Chrome installation simulation using built-in commands.
 - Logging all actions into `user_creation_log.csv` for audit.
 
-## 📁 File Structure
-
-```
-UserSetupTool/
-├── run_user_setup.bat     # Windows standalone batch script
-├── run_user_setup.sh      # Linux standalone bash script
-└── user_creation_log.csv  # Generated log file (output)
-```
-
 ## 🧭 How to Run
 
 ### 🪟 Windows (Batch)
