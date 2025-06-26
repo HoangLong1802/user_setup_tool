@@ -59,16 +59,5 @@ timestamp,username,email,phone,department
 2025-06-26T15:00:00+07:00,jdoe,jdoe@example.com,0123456789,IT
 ```
 
-## 🧑‍💻 For CV / Portfolio
-
-Demonstrates:
-
-- Native scripting on Windows and Linux
-- Command-line user input and validation
-- Department selection logic
-- Automated logging for IT audit
-
----
-
 **Author:** HoangLong1802  
 **Repo:** https://github.com/HoangLong1802/user_setup_tool.git
