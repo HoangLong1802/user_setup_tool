@@ -1,40 +1,37 @@
 #!/usr/bin/env bash
-# run_user_setup.sh
-clear
-echo "=== User Setup Tool (Linux) ==="
+# Usage: ./user_setup.sh <username> <department>
 
-# Prompt for username
-read -p "Enter username: " username
-
-# Check if user exists
-if id "$username" &>/dev/null; then
-  echo "User $username already exists."
-  exit 0
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Usage: $0 <username> <department>"
+  exit 1
 fi
 
-# Prompt for email & phone
-read -p "Enter email: " email
-read -p "Enter phone number: " phone
+USERNAME="$1"
+DEPARTMENT="$2"
+LOGFILE="$(dirname "$0")/user_creation_log.csv"
 
-# Departments list
-departments=(IT HR Accounting Business Telesale Sales Logistics CustomerService R&D Marketing)
-for i in "${!departments[@]}"; do
-  printf "%d. %s\n" $((i+1)) "${departments[i]}"
-done
-read -p "Select department (1-10): " idx
-department=${departments[idx-1]}
-echo "Selected department: $department"
+# 1) Cài đặt công cụ cơ bản: Chrome và mos
+sudo apt-get update -y
+# Thêm kho chính thức của Chrome
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 
-# Simulate Chrome install
-echo "Installing Chrome (simulated)..."
-sleep 2
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" \
+    | sudo tee /etc/apt/sources.list.d/google-chrome.list
 
-# Log to CSV
-logfile="user_creation_log.csv"
-if [ ! -f "$logfile" ]; then
-  echo "timestamp,username,email,phone,department" > "$logfile"
+sudo apt-get update -y
+sudo apt-get install -y google-chrome-stable mos
+
+# 2) Tạo nhóm và user (nếu nhóm chưa có thì tạo)
+if ! getent group "$DEPARTMENT" >/dev/null; then
+  sudo groupadd "$DEPARTMENT"
 fi
+sudo useradd -m -s /bin/bash -G "$DEPARTMENT" "$USERNAME"
 
-timestamp=$(date -Iseconds)
-echo "$timestamp,$username,$email,$phone,$department" >> "$logfile"
-echo "Log saved to $logfile"
+# 3) Ghi log: username,timestamp,department
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+if [ ! -f "$LOGFILE" ]; then
+  echo "username,timestamp,department" > "$LOGFILE"
+fi
+echo "${USERNAME},${TIMESTAMP},${DEPARTMENT}" >> "$LOGFILE"
+
+echo "Đã tạo user '$USERNAME' (phòng: $DEPARTMENT') và ghi log vào $LOGFILE"

@@ -1,46 +1,37 @@
 @echo off
-:: run_user_setup.bat
-cls
+REM Usage: run_user_setup.bat <username> <department>
 
-echo === User Setup Tool (Windows) ===
-
-:: Prompt for username
-set /p username=Enter username: 
-
-:: Check if user exists
-net user %username% >nul 2>&1
-if %errorlevel% equ 0 (
-  echo User %username% already exists.
-  goto end
+if "%~1"=="" (
+    echo Usage: %~nx0 ^<username^> ^<department^>
+    goto :eof
+)
+if "%~2"=="" (
+    echo Usage: %~nx0 ^<username^> ^<department^>
+    goto :eof
 )
 
-:: Prompt for email & phone
-set /p email=Enter email: 
-set /p phone=Enter phone number: 
+set "USERNAME=%~1"
+set "DEPARTMENT=%~2"
+set "LOGFILE=%~dp0user_creation_log.csv"
 
-:: Departments list
-setlocal enabledelayedexpansion
-set departments=IT,HR,Accounting,Business,Telesale,Sales,Logistics,CustomerService,R&D,Marketing
-for /l %%i in (1,1,10) do (
-  for /f "tokens=%%i delims=," %%d in ("%departments%") do echo %%i. %%d
+REM 1) Cài đặt công cụ cơ bản: Chrome và mos bằng Chocolatey
+choco install googlechrome -y
+choco install mos -y
+
+REM 2) Tạo user local và gán vào nhóm phòng ban (nếu cần tạo nhóm)
+net localgroup "%DEPARTMENT%" >nul 2>&1 || (
+    net localgroup "%DEPARTMENT%" /add
 )
-set /p idx=Select department (1-10): 
-for /f "tokens=%idx% delims=," %%d in ("%departments%") do set department=%%d
-endlocal & set department=%department%
+net user "%USERNAME%" /add
+net localgroup "%DEPARTMENT%" "%USERNAME%" /add
 
-echo Selected department: %department%
-
-:: Simulate Chrome install
-echo Installing Chrome (simulated)...
-timeout /t 2 >nul
-
-echo timestamp,username,email,phone,department>>user_creation_log.csv
-for /f %%t in ('powershell -command "Get-Date -Format o"') do (
-  set timestamp=%%t
+REM 3) Ghi log: username,timestamp,department
+for /f "tokens=1-3 delims=/:. " %%a in ("%date% %time%") do (
+    set "LOGTIME=%%c-%%b-%%a %%d:%%e:%%f"
 )
-echo %timestamp%,%username%,%email%,%phone%,%department%>>user_creation_log.csv
+if not exist "%LOGFILE%" (
+    echo username,timestamp,department>"%LOGFILE%"
+)
+echo %USERNAME%,%LOGTIME%,%DEPARTMENT%>>"%LOGFILE%"
 
-echo Log saved to user_creation_log.csv
-
-:end
-pause
+echo Da tao user "%USERNAME%" thuoc phong "%DEPARTMENT%" va ghi log tai "%LOGFILE%".
