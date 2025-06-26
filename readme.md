@@ -1,4 +1,3 @@
-````markdown
 # User Setup Tool
 
 A simple automation solution using Shell, Batch, and Python to:
@@ -15,7 +14,7 @@ A simple automation solution using Shell, Batch, and Python to:
 1. Copy `run_user_setup.bat` to your Windows machine.
 2. Open Command Prompt and navigate to the folder:
    ```bat
-   cd C:\path\to\UserSetupTool\window
+   cd C:\path\to\UserSetupTool\window\
    ```
 3. Run the script with arguments:
    ```bat
@@ -30,7 +29,7 @@ A simple automation solution using Shell, Batch, and Python to:
 1. Copy `user_setup.sh` to your Linux machine.
 2. Make it executable and run it:
    ```bash
-   cd /path/to/UserSetupTool/Linux
+   cd /path/to/UserSetupTool/Linux/
    chmod +x user_setup.sh
    sudo ./user_setup.sh <username> <department>
    ```
